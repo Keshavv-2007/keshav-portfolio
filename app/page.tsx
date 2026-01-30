@@ -90,7 +90,7 @@ const NAV_ITEMS = [
 // ==========================================
 // GEMINI API UTILITIES
 // ==========================================
-const getApiKey = () => {
+const getApiKey = (): string => {
   try {
     return (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_GEMINI_API_KEY) || "";
   } catch (e) {
@@ -101,7 +101,7 @@ const getApiKey = () => {
 const apiKey = getApiKey();
 const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
 
-const callGeminiAPI = async (prompt, systemInstruction = "") => {
+const callGeminiAPI = async (prompt: string, systemInstruction: string = ""): Promise<string> => {
   if (!apiKey) return "AI Strategy module is currently in 'Local Preview' mode. Once deployed with an API key, this feature will be fully active.";
   
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
@@ -110,7 +110,7 @@ const callGeminiAPI = async (prompt, systemInstruction = "") => {
     systemInstruction: { parts: [{ text: systemInstruction }] }
   };
 
-  const fetchWithRetry = async (retries = 5, delay = 1000) => {
+  const fetchWithRetry = async (retries: number = 5, delay: number = 1000): Promise<any> => {
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -128,38 +128,42 @@ const callGeminiAPI = async (prompt, systemInstruction = "") => {
     }
   };
 
-  const result = await fetchWithRetry();
-  return result.candidates?.[0]?.content?.parts?.[0]?.text || "Consultation failed. Please try again.";
+  try {
+    const result = await fetchWithRetry();
+    return result.candidates?.[0]?.content?.parts?.[0]?.text || "Consultation failed. Please try again.";
+  } catch (error) {
+    return "Failed to connect to AI engine.";
+  }
 };
 
 // ==========================================
 // ANIMATED PAGE WRAPPER
 // ==========================================
-const PageWrapper = ({ children }) => (
+const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-mode-both">
     {children}
   </div>
 );
 
-const App = () => {
-  const [currentPage, setCurrentPage] = useState('home');
-  const [isDarkMode, setIsDarkMode] = useState(true);
-  const [selectedVideo, setSelectedVideo] = useState(null);
-  const [videoError, setVideoError] = useState(false);
+const App: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState<string>('home');
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [videoError, setVideoError] = useState<boolean>(false);
   
-  const [consultantOpen, setConsultantOpen] = useState(false);
-  const [consultantQuery, setConsultantQuery] = useState("");
-  const [consultantResponse, setConsultantResponse] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [pitchIndustry, setPitchIndustry] = useState("");
-  const [customPitch, setCustomPitch] = useState("");
-  const [projectInsights, setProjectInsights] = useState({});
+  const [consultantOpen, setConsultantOpen] = useState<boolean>(false);
+  const [consultantQuery, setConsultantQuery] = useState<string>("");
+  const [consultantResponse, setConsultantResponse] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [pitchIndustry, setPitchIndustry] = useState<string>("");
+  const [customPitch, setCustomPitch] = useState<string>("");
+  const [projectInsights, setProjectInsights] = useState<Record<string, string>>({});
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  const handleConsultantSubmit = async (e) => {
+  const handleConsultantSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!consultantQuery.trim()) return;
     setIsLoading(true);
@@ -189,10 +193,10 @@ const App = () => {
     }
   };
 
-  const getProjectInsight = async (projectTitle, projectDesc) => {
+  const getProjectInsight = async (projectTitle: string, projectDesc: string) => {
     if (projectInsights[projectTitle]) return;
     setIsLoading(true);
-    const prompt = `Analyze project ROI for: "${projectTitle}".`;
+    const prompt = `Analyze project ROI for: "${projectTitle}". Description: ${projectDesc}`;
     try {
       const response = await callGeminiAPI(prompt);
       setProjectInsights(prev => ({ ...prev, [projectTitle]: response }));
@@ -203,7 +207,7 @@ const App = () => {
     }
   };
 
-  const handleProjectClick = (project) => {
+  const handleProjectClick = (project: any) => {
     if (project.type === 'video') {
       setVideoError(false);
       setSelectedVideo(project.src);
