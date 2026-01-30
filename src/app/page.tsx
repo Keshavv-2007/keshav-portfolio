@@ -5,7 +5,7 @@ import {
   Github, Linkedin, Code2, Layers, Cpu, Send, Briefcase, 
   Moon, Sun, Globe, Award, Zap, TrendingUp, Play, BarChart3, Video, Eye, 
   Sparkles, BookOpen, PieChart, ArrowRight, MapPin, X, Maximize2, Gem, 
-  Loader2, Wand2, Gamepad2, Tv, MessageSquare, Camera
+  Loader2, Wand2, Gamepad2, Tv, MessageSquare, Camera, AlertCircle
 } from 'lucide-react';
 
 // ==========================================
