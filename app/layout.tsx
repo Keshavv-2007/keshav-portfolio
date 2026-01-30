@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from "next";
 
+// Metadata for the application
 export const metadata: Metadata = {
   title: "Keshav Agrawal | AI Strategist",
   description: "BBA Finance Candidate & AI Production Specialist",
